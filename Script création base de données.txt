@@ -1,0 +1,64 @@
+CREATE TABLE utilisateur(
+   idUtilisateur SERIAL,
+   email VARCHAR(255)  NOT NULL,
+   pseudonyme VARCHAR(255)  NOT NULL,
+   password VARCHAR(255)  NOT NULL,
+   isVerified BOOLEAN NOT NULL,
+   verificationToken VARCHAR(255) ,
+   isAdmin BOOLEAN NOT NULL,
+   PRIMARY KEY(idUtilisateur)
+);
+
+CREATE TABLE groupe(
+   idGroupe SERIAL,
+   libelle VARCHAR(255)  NOT NULL,
+   PRIMARY KEY(idGroupe)
+);
+
+CREATE TABLE cours(
+   idCours SERIAL,
+   libelle VARCHAR(255)  NOT NULL,
+   idUtilisateur INTEGER NOT NULL,
+   PRIMARY KEY(idCours),
+   FOREIGN KEY(idUtilisateur) REFERENCES utilisateur(idUtilisateur)
+);
+
+CREATE TABLE inscrit(
+   idInscription SERIAL,
+   percent_compete NUMERIC(15,2) ,
+   idCours INTEGER NOT NULL,
+   idUtilisateur INTEGER NOT NULL,
+   PRIMARY KEY(idInscription),
+   FOREIGN KEY(idCours) REFERENCES cours(idCours),
+   FOREIGN KEY(idUtilisateur) REFERENCES utilisateur(idUtilisateur)
+);
+
+CREATE TABLE upload_rendu(
+   idUpload SERIAL,
+   path VARCHAR(255)  NOT NULL,
+   idInscription INTEGER NOT NULL,
+   PRIMARY KEY(idUpload),
+   FOREIGN KEY(idInscription) REFERENCES inscrit(idInscription)
+);
+
+CREATE TABLE user_groupe(
+   idUtilisateur INTEGER,
+   idGroupe INTEGER,
+   PRIMARY KEY(idUtilisateur, idGroupe),
+   FOREIGN KEY(idUtilisateur) REFERENCES utilisateur(idUtilisateur),
+   FOREIGN KEY(idGroupe) REFERENCES groupe(idGroupe)
+);
+
+CREATE TABLE disponible_pour(
+   idGroupe INTEGER,
+   idCours INTEGER,
+   PRIMARY KEY(idGroupe, idCours),
+   FOREIGN KEY(idGroupe) REFERENCES groupe(idGroupe),
+   FOREIGN KEY(idCours) REFERENCES cours(idCours)
+);
+
+
+
+INSERT INTO groupe VALUES (DEFAULT, 'Intervenant');
+INSERT INTO groupe VALUES (DEFAULT, 'Apprenant');
+INSERT INTO groupe VALUES (DEFAULT, 'Salarié');
