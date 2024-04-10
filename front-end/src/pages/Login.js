@@ -7,37 +7,34 @@ import '../css/Login.css'
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState(null);
     const navigate = useNavigate();
-
+  
     const handleSubmit = async (event) => {
       event.preventDefault();
   
       try {
-          const response = await fetch('/api/user/login', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                  email: email,
-                  password: password
-              })
-          });
+        const response = await fetch('/api/user/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password
+          })
+        });
   
-          if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-          }
-  
-          const data = await response.json();
-  
-          localStorage.setItem('token', data.token);
-          console.log(data);
-
-        navigate('/');
-      } catch (err) {
-          console.error(err);
+        if (response.ok) {
+          navigate('/');
+        } else {
+          const responseData = await response.json();
+          setErrorMessage(responseData.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
       }
-  }
+    };
     
     return (
         <div>
@@ -56,6 +53,7 @@ const Login = () => {
                             <button className='button' type="submit">Envoyer</button>
                         </div>
                     </form>
+                    {errorMessage && <p>{errorMessage}</p>}
                 </div>
             </motion.div>
         </div>

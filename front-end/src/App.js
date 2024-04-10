@@ -7,6 +7,7 @@ import Home from './pages/Home'
 import Footer from './components/Footer';
 import PrivateRoute from './components/PrivateRoute';
 import Register from './pages/Register';
+import Profile from './pages/profile';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
                 <Route path='/Modules' element={<PrivateRoute><Modules /></PrivateRoute>} />
                 <Route path='/AddModules' element={<PrivateRoute><AddModules/></PrivateRoute>} />
                 <Route path='/' element={<PrivateRoute><Home /></PrivateRoute>} />
+                <Route path='/Profile' element={<PrivateRoute><Profile /></PrivateRoute>} />
               </Routes>
               <Footer />
             </>

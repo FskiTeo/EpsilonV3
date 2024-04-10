@@ -12,24 +12,33 @@ const Header = () => {
         setIsMenuOpen(false);
     };
 
-    const logout = async () => {
-        const response = await fetch('api/user/logout', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-        });
-    
-        if (response.ok) {
-            localStorage.removeItem('token');
-            navigate('/login');
-        } else {
-            console.error('Logout failed');
-        }
-    };
+    const isLoggedIn = () => {
+        const cookieValue = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('isLoggedIn'))
+          .split('=')[1];
+        return cookieValue === 'true';
+      };
 
-    return (
+    const logout = async () => {
+        const response = await fetch('/api/user/logout', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+        });
+      
+        if (response.ok) {
+          document.cookie = "isLoggedIn=false; path=/";
+          navigate('/login');
+        } else {
+          const responseData = await response.json();
+          console.error('Logout failed:', responseData);
+        }
+      };
+
+      return (
         <header className="header">
             <div onClick={() => handleMenuItemClick('/')}>
                 <img className='logo' src={LogoEpsi} alt='' /></div>
@@ -38,12 +47,13 @@ const Header = () => {
                     <li className='button-55 li' onClick={() => handleMenuItemClick('/')}>Home</li>
                     <li className='button-55 li' onClick={() => handleMenuItemClick('/Modules')}>Module</li>
                     <li className='button-55 li' onClick={() => handleMenuItemClick('/AddModules')}>Add Module</li>
+                    <li className='button-55 li' onClick={() => handleMenuItemClick('/Profile')}>Profile</li>
                 </ul>
             </nav>
             <div>
-                <li onClick={() => handleMenuItemClick('/login')} className='button-55' >Login</li>
-                <li onClick={logout} className='button-55' >Log Out</li>
-                <li onClick={() => handleMenuItemClick('/register')} className='button-55' >Register</li>
+                {!isLoggedIn() && <li onClick={() => handleMenuItemClick('/login')} className='button-55' >Login</li>}
+                {isLoggedIn() && <li onClick={logout} className='button-55' >Log Out</li>}
+                {!isLoggedIn() && <li onClick={() => handleMenuItemClick('/register')} className='button-55' >Register</li>}
             </div>
         </header>
     );
